@@ -1,0 +1,12 @@
+[package]
+name = "astro-format"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Astro Format is a library for efficiently encoding and decoding sets of bytes in Astro Format."
+repository = "https://github.com/stelar-labs/rust-astro-format"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
