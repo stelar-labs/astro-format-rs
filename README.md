@@ -1,4 +1,4 @@
-# Rust Astro Format
+# Astro Format
 
 Astro Format is a library for efficiently encoding and decoding a set of bytes into a single buffer format.
 
