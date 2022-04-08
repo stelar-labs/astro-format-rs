@@ -8,7 +8,7 @@ Astro Format is a library for efficiently encoding and decoding a set of bytes i
 
 ```
 [dependencies]
-astro-format = "0.1.0"
+astro-format = "0.2.0"
 ```
 
 ### Import
