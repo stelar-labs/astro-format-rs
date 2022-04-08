@@ -1,47 +1,55 @@
-pub fn encode(set: Vec<Vec<u8>>) -> Vec<u8> {
+pub fn encode(set: &Vec<Vec<u8>>) -> Vec<u8> {
 
     set
     .iter()
     .map(|x| {
         
-        let u64_len: u64 = x.len() as u64;
+        let len: usize = x.len();
 
-        let mut len_buf: Vec<u8> = u64_len.to_be_bytes().to_vec();
+        let mut len_buf: Vec<u8> = len.to_be_bytes().to_vec();
 
         while len_buf[0] == 0 && len_buf.len() > 1 {
             len_buf.remove(0);
         }
 
-        let u8_len_size: u8 = len_buf.len() as u8;
+        let len_size: Vec<u8> = vec![0_u8; len_buf.len()];
 
-        [vec![u8_len_size], len_buf, x.to_vec()].concat()
+        [len_size, len_buf, x.to_vec()].concat()
 
     })
     .fold(vec![], |acc, x| [acc,x].concat())
 
 }
 
-pub fn decode(astro: Vec<u8>) -> Vec<Vec<u8>> {
+pub fn decode(astro: &Vec<u8>) -> Vec<Vec<u8>> {
 
     let mut set: Vec<Vec<u8>> = Vec::new();
     
     let mut i: usize = 0;
 
+    let usize_bytes = (usize::BITS/8) as usize;
+
     while i < astro.len() {
 
-        let len_size = astro[i] as usize;
+        let mut len_buf_size: usize = 0;
 
-        i += 1;
+        while astro[i] == 0 {
+            
+            len_buf_size += 1;
 
-        let mut u64_len_buf: Vec<u8> = astro[i..(i+len_size)].to_vec();
+            i += 1
 
-        i += len_size;
-
-        while u64_len_buf.len() < 8 {
-            u64_len_buf = [vec![0], u64_len_buf].concat()
         }
+
+        let mut len_buf: Vec<u8> = astro[i..(i+len_buf_size)].to_vec();
+
+        while len_buf.len() < usize_bytes {
+            len_buf = [vec![0], len_buf].concat()
+        }
+
+        i += len_buf_size;
         
-        let len: usize = u64::from_be_bytes(u64_len_buf.try_into().unwrap()) as usize;
+        let len: usize = usize::from_be_bytes(len_buf.try_into().unwrap());
 
         let buf: Vec<u8> = astro[i..(i+len)].to_vec();
 
@@ -53,4 +61,18 @@ pub fn decode(astro: Vec<u8>) -> Vec<Vec<u8>> {
 
     set
 
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn transcode() {
+
+        let set: Vec<Vec<u8>> = vec![vec![1,2,3], vec![4,5,6], vec![7,8,9]];
+
+        let astro = encode(&set);
+
+        assert_eq!(set, decode(&astro));
+
+    }
 }
