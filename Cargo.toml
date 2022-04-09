@@ -1,6 +1,6 @@
 [package]
 name = "astro-format"
-version = "0.2.0"
+version = "0.4.0"
 edition = "2021"
 license = "MIT"
 description = "Astro Format is a library for efficiently encoding and decoding a set of bytes into a single buffer format."
