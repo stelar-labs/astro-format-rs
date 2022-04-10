@@ -1,9 +1,9 @@
 [package]
 name = "astro-format"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 license = "MIT"
-description = "Astro Format is a library for efficiently encoding and decoding a set of bytes into a single buffer format."
+description = "Astro Format is a library for efficiently transcoding arrays into a single buffer and native rust types into strings."
 repository = "https://github.com/stelar-labs/rust-astro-format"
 readme = "README.md"
 
