@@ -18,7 +18,7 @@ pub fn encode(arrays: &Vec<Vec<u8>>) -> Vec<u8> {
 
                 } else {
 
-                    let mut len_buf: Vec<u8> = len.to_le_bytes().to_vec();
+                    let mut len_buf = len.to_le_bytes().to_vec();
 
                     while len_buf[len_buf.len() - 1] == 0 {
 
@@ -36,137 +36,158 @@ pub fn encode(arrays: &Vec<Vec<u8>>) -> Vec<u8> {
             .fold(vec![], |acc, x| [acc, x].concat())
     
     }
-
 }
 
-pub fn decode(buffer: &Vec<u8>) -> Vec<Vec<u8>> {
+pub fn decode(buffer: &Vec<u8>) -> Option<Vec<Vec<u8>>> {
+
+    let mut errors: bool = false;
 
     let mut arrays: Vec<Vec<u8>> = Vec::new();
 
-    if buffer != &vec![0_u8] && buffer.len() > 1 {
-    
-        let mut i: usize = 0;
+    let mut i: usize = 0;
 
-        let usize_bytes = (usize::BITS/8) as usize;
+    let usize_bytes = (usize::BITS/8) as usize;
 
-        while i < buffer.len() {
+    while i < buffer.len() {
 
-            if buffer[i] == 0 {
+        match buffer[i..].iter().position(|&x| x == 0_u8) {
+            
+            Some(res) => {
 
-                arrays.push(Vec::new());
+                if res == 0 {
 
-                i += 2
+                    i += res;
 
-            } else {
+                    let next_i = i + 1;
 
-                let mut len_buf: Vec<u8> = Vec::new();
-
-                while buffer[i] != 0 {
-                    
-                    len_buf.push(buffer[i]);
-
-                    i += 1
-
-                }
-
-                i += 1;
-
-                if len_buf.len() > usize_bytes {
-
-                    break
-
-                } else {
-                
-                    while len_buf.len() < usize_bytes {
-                        len_buf.push(0);
+                    if buffer.len() == 1 {
+                        break;
                     }
                     
-                    let len: usize = usize::from_le_bytes(len_buf.try_into().unwrap());
+                    else if next_i < buffer.len() && buffer[next_i] == 0 {
+                        arrays.push(Vec::new()); i += 2
+                    }
+                    
+                    else {
+                        errors = true; break
+                    }
 
-                    let buf: Vec<u8> = buffer[i..(i + len)].to_vec();
+                } else {
 
-                    i += len;
+                    let mut size_buffer: Vec<u8> = buffer[i..res + i].to_vec();
 
-                    arrays.push(buf)
+                    if size_buffer.len() > usize_bytes {
+                        errors = true; break
+                    }
+                    
+                    else {
 
+                        i += size_buffer.len();
+
+                        i += 1;
+
+                        while size_buffer.len() < usize_bytes {
+                            size_buffer.push(0);
+                        }
+                        
+                        let len: usize = usize::from_le_bytes(size_buffer.try_into().unwrap());
+    
+                        let buf: Vec<u8> = buffer[i..i + len].to_vec();
+    
+                        i += len;
+    
+                        arrays.push(buf)
+
+                    }
                 }
+            },
 
+            None => {
+                errors = true; break
             }
-
         }
-
     }
 
-    arrays
+    if errors {
+        None
+    } else {
+        Some(arrays)
+    }
 
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn one_array() {
+    fn errors() {
+        assert_eq!(None, decode(&vec![20_u8, 20_u8]))
+    }
 
-        let set: Vec<Vec<u8>> = vec![vec![1,2,3]];
+    #[test]
+    fn one_array_array() {
 
-        let astro = encode(&set);
+        let arrays: Vec<Vec<u8>> = vec![vec![1,2,3]];
 
-        assert_eq!(set, decode(&astro));
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
 
     }
 
     #[test]
-    fn three_arrays() {
+    fn three_arrays_array() {
 
-        let set: Vec<Vec<u8>> = vec![vec![1,2,3], vec![4,5,6], vec![7,8,9]];
+        let arrays: Vec<Vec<u8>> = vec![vec![1,2,3], vec![4,5,6], vec![7,8,9]];
 
-        let astro = encode(&set);
+        let buffer = encode(&arrays);
 
-        assert_eq!(set, decode(&astro));
+        assert_eq!(arrays, decode(&buffer).unwrap());
 
     }
 
     #[test]
     fn empty_array() {
 
-        let set: Vec<Vec<u8>> = vec![];
+        let arrays: Vec<Vec<u8>> = vec![];
 
-        let astro = encode(&set);
+        let buffer = encode(&arrays);
 
-        assert_eq!(set, decode(&astro));
-
-    }
-
-    #[test]
-    fn one_empty_array() {
-
-        let set: Vec<Vec<u8>> = vec![vec![]];
-
-        let astro = encode(&set);
-
-        assert_eq!(set, decode(&astro));
+        assert_eq!(arrays, decode(&buffer).unwrap());
 
     }
 
     #[test]
-    fn three_empty_arrays() {
+    fn one_empty_array_array() {
 
-        let set: Vec<Vec<u8>> = vec![vec![], vec![], vec![]];
+        let arrays: Vec<Vec<u8>> = vec![vec![]];
 
-        let astro = encode(&set);
+        let buffer = encode(&arrays);
 
-        assert_eq!(set, decode(&astro));
+        assert_eq!(arrays, decode(&buffer).unwrap());
 
     }
 
     #[test]
-    fn two_empty_arrays() {
+    fn three_empty_arrays_array() {
 
-        let set: Vec<Vec<u8>> = vec![vec![1,2,3], vec![], vec![7,8,9]];
+        let arrays: Vec<Vec<u8>> = vec![vec![], vec![], vec![]];
 
-        let astro = encode(&set);
+        let buffer = encode(&arrays);
 
-        assert_eq!(set, decode(&astro));
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+    #[test]
+    fn two_empty_arrays_array() {
+
+        let arrays: Vec<Vec<u8>> = vec![vec![1,2,3], vec![], vec![7,8,9]];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
 
     }
 
