@@ -1,6 +1,6 @@
 [package]
 name = "astro-format"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 license = "MIT"
 description = "Astro Format is a library for efficiently transcoding arrays into a single buffer and native rust types into hexadecimal strings."

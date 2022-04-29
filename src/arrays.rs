@@ -1,3 +1,5 @@
+use std::error::Error;
+
 pub fn encode(arrays: &Vec<Vec<u8>>) -> Vec<u8> {
 
     if arrays.is_empty() {
@@ -38,19 +40,19 @@ pub fn encode(arrays: &Vec<Vec<u8>>) -> Vec<u8> {
     }
 }
 
-pub fn decode(buffer: &Vec<u8>) -> Option<Vec<Vec<u8>>> {
+pub fn decode(bytes: &[u8]) -> Result<Vec<&[u8]>, Box<dyn Error>> {
 
     let mut errors: bool = false;
 
-    let mut arrays: Vec<Vec<u8>> = Vec::new();
+    let mut result: Vec<&[u8]> = Vec::new();
 
     let mut i: usize = 0;
 
     let usize_bytes = (usize::BITS/8) as usize;
 
-    while i < buffer.len() {
+    while i < bytes.len() {
 
-        match buffer[i..].iter().position(|&x| x == 0_u8) {
+        match bytes[i..].iter().position(|&x| x == 0_u8) {
             
             Some(res) => {
 
@@ -60,27 +62,22 @@ pub fn decode(buffer: &Vec<u8>) -> Option<Vec<Vec<u8>>> {
 
                     let next_i = i + 1;
 
-                    if buffer.len() == 1 {
+                    if bytes.len() == 1 {
                         break;
-                    }
-                    
-                    else if next_i < buffer.len() && buffer[next_i] == 0 {
-                        arrays.push(Vec::new()); i += 2
-                    }
-                    
-                    else {
+                    } else if next_i < bytes.len() && bytes[next_i] == 0 {
+                        result.push(&[]); i += 2
+                    } else {
                         errors = true; break
                     }
 
                 } else {
 
-                    let mut size_buffer: Vec<u8> = buffer[i..res + i].to_vec();
+                    let mut size_buffer: Vec<u8> = bytes[i..res + i].to_vec();
 
                     if size_buffer.len() > usize_bytes {
-                        errors = true; break
-                    }
-                    
-                    else {
+                        errors = true;
+                        break
+                    } else {
 
                         i += size_buffer.len();
 
@@ -91,27 +88,26 @@ pub fn decode(buffer: &Vec<u8>) -> Option<Vec<Vec<u8>>> {
                         }
                         
                         let len: usize = usize::from_le_bytes(size_buffer.try_into().unwrap());
-    
-                        let buf: Vec<u8> = buffer[i..i + len].to_vec();
+
+                        result.push(&bytes[i..i + len]);
     
                         i += len;
-    
-                        arrays.push(buf)
 
                     }
                 }
             },
 
             None => {
-                errors = true; break
+                errors = true;
+                break
             }
         }
     }
 
     if errors {
-        None
+        Err("Decode error!")?
     } else {
-        Some(arrays)
+        Ok(result)
     }
 
 }
@@ -122,7 +118,7 @@ mod tests {
 
     #[test]
     fn errors() {
-        assert_eq!(None, decode(&vec![20_u8, 20_u8]))
+        assert!(decode(&[20_u8, 20_u8]).is_err())
     }
 
     #[test]

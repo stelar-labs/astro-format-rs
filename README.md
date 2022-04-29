@@ -8,7 +8,7 @@ Astro Format is a library for efficiently transcoding arrays into a single buffe
 
 ```
 [dependencies]
-astro-format = "0.6.0"
+astro-format = "0.7.0"
 ```
 
 ### Module.rs
@@ -39,4 +39,4 @@ let enc = string::encode::bytes(&buf);
 let dec = string::decode::as_bytes(&enc).unwrap();
 ```
 
-2022-04-14
+2022-04-30
