@@ -1,6 +1,6 @@
 use std::error::Error;
 
-pub fn encode(arrays: &Vec<Vec<u8>>) -> Vec<u8> {
+pub fn encode(arrays: &[&[u8]]) -> Vec<u8> {
 
     if arrays.is_empty() {
 
@@ -124,7 +124,7 @@ mod tests {
     #[test]
     fn one_array_array() {
 
-        let arrays: Vec<Vec<u8>> = vec![vec![1,2,3]];
+        let arrays: Vec<&[u8]> = vec![&[1,2,3]];
 
         let buffer = encode(&arrays);
 
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn three_arrays_array() {
 
-        let arrays: Vec<Vec<u8>> = vec![vec![1,2,3], vec![4,5,6], vec![7,8,9]];
+        let arrays: Vec<&[u8]> = vec![&[1,2,3], &[4,5,6], &[7,8,9]];
 
         let buffer = encode(&arrays);
 
@@ -146,7 +146,7 @@ mod tests {
     #[test]
     fn empty_array() {
 
-        let arrays: Vec<Vec<u8>> = vec![];
+        let arrays: Vec<&[u8]> = vec![];
 
         let buffer = encode(&arrays);
 
@@ -157,7 +157,7 @@ mod tests {
     #[test]
     fn one_empty_array_array() {
 
-        let arrays: Vec<Vec<u8>> = vec![vec![]];
+        let arrays: Vec<&[u8]> = vec![&[]];
 
         let buffer = encode(&arrays);
 
@@ -168,7 +168,7 @@ mod tests {
     #[test]
     fn three_empty_arrays_array() {
 
-        let arrays: Vec<Vec<u8>> = vec![vec![], vec![], vec![]];
+        let arrays: Vec<&[u8]> = vec![&[], &[], &[]];
 
         let buffer = encode(&arrays);
 
@@ -179,7 +179,7 @@ mod tests {
     #[test]
     fn two_empty_arrays_array() {
 
-        let arrays: Vec<Vec<u8>> = vec![vec![1,2,3], vec![], vec![7,8,9]];
+        let arrays: Vec<&[u8]> = vec![&[1,2,3], &[], &[7,8,9]];
 
         let buffer = encode(&arrays);
 

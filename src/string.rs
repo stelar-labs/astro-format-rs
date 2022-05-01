@@ -12,7 +12,7 @@ mod tests {
 
         let encoded = encode::bytes(&array);
 
-        let decoded = decode::as_bytes(&encoded).unwrap();
+        let decoded = decode::bytes(&encoded).unwrap();
 
         assert_eq!(array, decoded);
 
