@@ -1,10 +1,10 @@
 [package]
 name = "astro-format"
-version = "0.8.0"
+version = "1.0.0"
 edition = "2021"
 license = "MIT"
-description = "Astro Format is a library for efficiently transcoding arrays into a single buffer and native rust types into hexadecimal strings."
-repository = "https://github.com/stelar-labs/rust-astro-format"
+description = "Astro Format is a library for efficiently transcoding between multiple arrays and a single buffer."
+repository = "https://github.com/stelar-labs/astro-format-rs"
 readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

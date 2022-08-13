@@ -1,6 +1,6 @@
 # Astro Format
 
-Astro Format is a library for efficiently transcoding arrays into a single buffer and native rust types into hexadecimal strings.
+Astro Format is a library for efficiently transcoding between multiple arrays and a single buffer.
 
 ## Usage
 
@@ -8,35 +8,29 @@ Astro Format is a library for efficiently transcoding arrays into a single buffe
 
 ```text
 [dependencies]
-astro-format = "0.8.0"
+astro-format = "1.0.0"
 ```
 
 ### Module.rs
 
 ```text
-astro_format::{ string, arrays };
+use astro_format;
 ```
 
 ## API
 
-### Array
+### Encode
 
 ```text
-let ars: Vec<Vec<u8>>;
+let initial_arrays: Vec<&[u8]> = Vec::new();
 
-let buf = arrays::encode(&ars);
-
-let ars = arrays::decode(&buf).unwrap();
+let encoded_buffer: Vec<u8> = astro_format::encode(&initial_arrays);
 ```
 
-### String
+### Decode
 
 ```text
-let buf: Vec<u8>;
-
-let enc = string::encode::bytes(&buf);
-
-let dec = string::decode::as_bytes(&enc).unwrap();
+let decoded_arrays: Vec<&[u8]> = astro_format::decode(&encoded_buffer)?;
 ```
 
-2022-05-01
+2022-08-10
