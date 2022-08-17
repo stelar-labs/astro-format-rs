@@ -1,6 +1,16 @@
 # Astro Format
 
-Astro Format is a library for efficiently transcoding between multiple arrays and a single buffer.
+Astro Format is a library for transcoding between multiple arrays and a single buffer.
+
+## Author
+
+Roy R. O. Okello
+
+[Email](mailto:royokello@protonmail.com)
+
+[Github](https://github.com/royokello)
+
+[Twitter](https://twitter.com/RealOkello)
 
 ## Usage
 
@@ -33,4 +43,4 @@ let encoded_buffer: Vec<u8> = astro_format::encode(&initial_arrays);
 let decoded_arrays: Vec<&[u8]> = astro_format::decode(&encoded_buffer)?;
 ```
 
-2022-08-10
+2022-08-17

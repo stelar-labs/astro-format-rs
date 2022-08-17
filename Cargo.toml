@@ -3,7 +3,7 @@ name = "astro-format"
 version = "1.0.0"
 edition = "2021"
 license = "MIT"
-description = "Astro Format is a library for efficiently transcoding between multiple arrays and a single buffer."
+description = "Astro Format is a library for transcoding between multiple arrays and a single buffer."
 repository = "https://github.com/stelar-labs/astro-format-rs"
 readme = "README.md"
 

@@ -112,3 +112,80 @@ pub fn decode(buffer: &[u8]) -> Result<Vec<&[u8]>, Box<dyn Error>> {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn errors() {
+        assert!(decode(&[20_u8, 20_u8]).is_err())
+    }
+
+    #[test]
+    fn one_array() {
+
+        let arrays: Vec<&[u8]> = vec![&[1,2,3]];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+    #[test]
+    fn three_arrays() {
+
+        let arrays: Vec<&[u8]> = vec![&[1,2,3], &[4,5,6], &[7,8,9]];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+    #[test]
+    fn empty_array() {
+
+        let arrays = vec![];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+    #[test]
+    fn one_empty_array() {
+
+        let arrays: Vec<&[u8]> = vec![&[]];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+    #[test]
+    fn three_empty_arrays() {
+
+        let arrays: Vec<&[u8]> = vec![&[], &[], &[]];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+    #[test]
+    fn two_arrays_and_empty_array() {
+
+        let arrays: Vec<&[u8]> = vec![&[1,2,3], &[], &[7,8,9]];
+
+        let buffer = encode(&arrays);
+
+        assert_eq!(arrays, decode(&buffer).unwrap());
+
+    }
+
+}
