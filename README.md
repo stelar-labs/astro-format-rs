@@ -18,7 +18,7 @@ Roy R. O. Okello
 
 ```text
 [dependencies]
-astro-format = "1.0.0"
+astro-format = "1.1.0"
 ```
 
 ### Module.rs
@@ -43,4 +43,4 @@ let encoded_buffer: Vec<u8> = astro_format::encode(&initial_arrays);
 let decoded_arrays: Vec<&[u8]> = astro_format::decode(&encoded_buffer)?;
 ```
 
-2022-08-17
+## License

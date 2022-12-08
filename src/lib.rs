@@ -41,6 +41,45 @@ pub fn encode(array: &[&[u8]]) -> Vec<u8> {
     }
 }
 
+pub fn encode_vec(arg: &[Vec<u8>]) -> Vec<u8> {
+
+    if arg.is_empty() {
+
+        vec![0_u8]
+
+    } else {
+        
+        arg.iter().map(|x| {
+            
+            let len: usize = x.len();
+
+            if len == 0 {
+
+                vec![0_u8, 0_u8]
+
+            } else {
+
+                let mut len_buf = len.to_le_bytes().to_vec();
+
+                while len_buf[len_buf.len() - 1] == 0 {
+
+                    len_buf.pop();
+
+                }
+
+                len_buf.push(0);
+
+                [len_buf, x.to_vec()].concat()
+
+            }
+
+        })
+        .fold(vec![], |acc, x| [acc, x].concat())
+
+    }
+
+}
+
 pub fn decode(buffer: &[u8]) -> Result<Vec<&[u8]>, Box<dyn Error>> {
     
     let mut errors = false;
