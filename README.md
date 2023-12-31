@@ -8,10 +8,6 @@ Astro Format is a library for transcoding between an array of implemented types 
 
 ## Usage
 
-### Installation
-
-- Using Crates by adding `astro-format = "2.0.0"` to `Cargo.toml` under `[dependencies]`
-
 ## API
 
 ### Encode
@@ -35,13 +31,30 @@ let decoded: Vec<&[u8]> = astro_format::decode(&encoded).unwrap();
 
 ### IntoBytes
 
-- `into_bytes(&self) -> Vec<u8>`
-- Support for Rust Data Types
+The IntoBytes trait provides a mechanism to convert various data types into a vector of bytes (Vec<u8>). It is a versatile trait for serialization purposes, facilitating the conversion of primitive data types, strings, and even characters into a byte representation.
 
-### TryFromBytes
+```
+pub trait IntoBytes {
+    fn into_bytes(&self) -> Vec<u8>;
+}
+```
 
-- `try_from_bytes(value: &'a [u8]) -> Result<Self, Box<dyn std::error::Error>>`
-- Support for Rust Data Types
+### TryInto
+
+The TryFromBytes trait is designed for converting a slice of bytes (&[u8]) back into various data types. It's particularly useful in contexts where data serialized as bytes needs to be deserialized back into its original or a usable form.
+
+```
+pub trait TryFromBytes<'a>: Sized {
+    fn try_from_bytes(value: &'a [u8]) -> Result<Self, Box<dyn std::error::Error>>;
+}
+```
+
+#### IntoBytes & TryInto Type Support
+
+- Unsigned and Signed integers
+- String and Str
+- Vectors and Slices of Bytes
+- Characters
 
 ## License
 
