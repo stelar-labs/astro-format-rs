@@ -179,6 +179,22 @@ macro_rules! impl_into_bytes_from_to_vec {
 impl_into_bytes_from_to_vec!(Vec<u8>);
 impl_into_bytes_from_to_vec!([u8]);
 
+impl IntoBytes for char {
+    fn into_bytes(&self) -> Vec<u8> {
+        let mut buf = [0; 4];
+        self.encode_utf8(&mut buf).as_bytes().to_vec()
+    }
+}
+
+impl IntoBytes for &char {
+    fn into_bytes(&self) -> Vec<u8> {
+        let mut buf = [0; 4];
+        (*self).encode_utf8(&mut buf).as_bytes().to_vec()
+    }
+}
+
+
+
 pub trait TryFromBytes<'a>: Sized {
     fn try_from_bytes(value: &'a [u8]) -> Result<Self, Box<dyn std::error::Error>>;
 }
@@ -231,6 +247,21 @@ impl_try_from_bytes_for_numeric!(i16);
 impl_try_from_bytes_for_numeric!(i32);
 impl_try_from_bytes_for_numeric!(i64);
 impl_try_from_bytes_for_numeric!(i128);
+
+impl TryFromBytes<'_> for char {
+    fn try_from_bytes(value: &[u8]) -> Result<Self, Box<dyn std::error::Error>> {
+        let str_slice = std::str::from_utf8(value)
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+
+        let mut char_iter = str_slice.chars();
+        if let (Some(ch), None) = (char_iter.next(), char_iter.next()) {
+            Ok(ch)
+        } else {
+            Err("Invalid byte slice for char".into())
+        }
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -315,5 +346,36 @@ mod tests {
         assert_eq!(list, decoded);
 
     }
+
+    #[test]
+    fn test_char_into_bytes() {
+        let value = 'a'; // 'a' in UTF-8 is 97
+        assert_eq!(value.into_bytes(), vec![97]);
+
+        let value = 'ñ'; // A multi-byte character
+        assert_eq!(value.into_bytes(), vec![195, 177]);
+    }
+
+    #[test]
+    fn test_char_try_from_bytes_valid() {
+        let bytes = [97]; // 'a' in UTF-8
+        assert_eq!(char::try_from_bytes(&bytes).unwrap(), 'a');
+
+        let bytes = [195, 177]; // 'ñ' in UTF-8
+        assert_eq!(char::try_from_bytes(&bytes).unwrap(), 'ñ');
+    }
+
+    #[test]
+    fn test_char_try_from_bytes_invalid() {
+        let bytes = []; // Empty slice
+        assert!(char::try_from_bytes(&bytes).is_err());
+
+        let bytes = [97, 98]; // Represents 'ab', more than one char
+        assert!(char::try_from_bytes(&bytes).is_err());
+
+        let bytes = [255]; // Invalid UTF-8
+        assert!(char::try_from_bytes(&bytes).is_err());
+    }
+
 
 }
