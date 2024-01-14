@@ -1,6 +1,6 @@
 [package]
 name = "astro-format"
-version = "2.1.0"
+version = "2.1.1"
 edition = "2021"
 license = "MIT"
 description = "Astro Format is a library for transcoding between an array of implemented types and a single buffer."
