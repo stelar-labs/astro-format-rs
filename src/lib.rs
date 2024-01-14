@@ -51,13 +51,11 @@ where
 
 }
 
-pub fn decode<'a, T, B>(buffer: &'a B) -> Result<Vec<T>, Box<dyn Error>>
+
+pub fn decode<'a, T>(buffer: &'a [u8]) -> Result<Vec<T>, Box<dyn Error>>
 where
     T: TryFromBytes<'a>,
-    B: AsRef<[u8]>,
 {
-
-    let buffer = buffer.as_ref();
 
     let mut decoded_data = Vec::new();
     let mut offset = 0;
@@ -215,7 +213,7 @@ impl TryFromBytes<'_> for Vec<u8> {
 }
 
 impl<'a> TryFromBytes<'a> for &'a [u8] {
-    fn try_from_bytes(value: &'a [u8]) -> Result<&'a [u8], Box<dyn std::error::Error>> {
+    fn try_from_bytes(value: &'a [u8]) -> Result<&[u8], Box<dyn std::error::Error>> {
         Ok(value)
     }
 }
